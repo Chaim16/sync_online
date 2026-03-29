@@ -29,7 +29,90 @@ document.addEventListener('DOMContentLoaded', function() {
         // 初始化字符计数
         updateCharCount();
     }
+    
+    // 初始化文件输入框
+    initFileInput();
 });
+
+// 初始化文件输入框
+function initFileInput() {
+    const fileInput = document.getElementById('fileInput');
+    const customFileInput = document.getElementById('customFileInput');
+    const selectedFilesContainer = document.getElementById('selectedFiles');
+    
+    if (fileInput && customFileInput) {
+        // 文件选择事件
+        fileInput.addEventListener('change', function(e) {
+            handleFileSelect(e.target.files);
+        });
+        
+        // 拖拽事件
+        const fileInputContent = customFileInput.querySelector('.file-input-content');
+        
+        fileInputContent.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            customFileInput.classList.add('active');
+        });
+        
+        fileInputContent.addEventListener('dragleave', function() {
+            customFileInput.classList.remove('active');
+        });
+        
+        fileInputContent.addEventListener('drop', function(e) {
+            e.preventDefault();
+            customFileInput.classList.remove('active');
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files);
+            }
+        });
+    }
+}
+
+// 处理文件选择
+function handleFileSelect(files) {
+    const selectedFilesContainer = document.getElementById('selectedFiles');
+    if (!selectedFilesContainer) return;
+    
+    // 清空现有列表
+    selectedFilesContainer.innerHTML = '';
+    
+    // 添加新文件
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileItem = document.createElement('div');
+        fileItem.className = 'selected-file-item';
+        fileItem.dataset.index = i;
+        
+        const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+        
+        fileItem.innerHTML = `
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${fileSize} MB</div>
+            </div>
+            <button class="remove-file-btn" onclick="removeFile(${i})">移除</button>
+        `;
+        
+        selectedFilesContainer.appendChild(fileItem);
+    }
+}
+
+// 移除文件
+function removeFile(index) {
+    // 这里简化处理，实际项目中可能需要更复杂的逻辑
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        // 创建新的FileList
+        const newFiles = Array.from(fileInput.files).filter((_, i) => i !== index);
+        // 由于FileList是只读的，这里我们使用DataTransfer来创建新的FileList
+        const dataTransfer = new DataTransfer();
+        newFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+        
+        // 更新显示
+        handleFileSelect(fileInput.files);
+    }
+}
 
 function switchMode(mode) {
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -56,7 +139,10 @@ async function createSession() {
         if (response.ok) {
             sessionId = data.session_id;
             const verificationCode = data.verification_code;
-            showResult('sessionInfo', `✅ 会话创建成功<br>验证码: <strong onclick="copyVerificationCode('${verificationCode}')" style="cursor: pointer;">${verificationCode}</strong><br>过期时间: ${new Date(data.expires_at).toLocaleString()}<br>请将验证码告诉接收方<br><small style="font-size: 0.8rem; opacity: 0.8;">点击验证码自动复制</small>`, 'success');
+            const expiresAt = new Date(data.expires_at);
+            const now = new Date();
+            const minutes = Math.ceil((expiresAt - now) / (1000 * 60));
+            showResult('sessionInfo', `✅ 会话创建成功<br>验证码: <strong onclick="copyVerificationCode('${verificationCode}')" style="cursor: pointer;">${verificationCode}</strong><br>有效时间：${minutes} 分钟<br>请将验证码告诉接收方<br><small style="font-size: 0.8rem; opacity: 0.8;">点击验证码自动复制</small>`, 'success');
             document.getElementById('fileUploadArea').style.display = 'block';
             document.getElementById('textSendArea').style.display = 'block';  // 显示文本发送区域
             connectWebSocket(data.session_id, 'sender');

@@ -27,10 +27,20 @@
                 <button class="btn" onclick="createSession()">创建传输通道</button>
                 
                 <div id="fileUploadArea" style="display:none;">
-                    <div class="input-group">
-                        <label>选择文件:</label>
-                        <input type="file" id="fileInput" multiple>
-                        <div class="helper-text">💡 单个文件最大300MB</div>
+                    <div class="file-input-wrapper">
+                        <label class="file-input-label">选择文件:</label>
+                        <div class="custom-file-input" id="customFileInput">
+                            <input type="file" id="fileInput" multiple>
+                            <div class="file-input-content">
+                                <div class="file-input-text">
+                                    <div class="file-input-icon">📁</div>
+                                    <h4>点击或拖拽文件到此处</h4>
+                                    <p>支持多个文件，单个文件最大300MB</p>
+                                </div>
+                                <button class="file-input-btn">选择文件</button>
+                            </div>
+                        </div>
+                        <div class="selected-files" id="selectedFiles"></div>
                     </div>
                     <button class="btn" onclick="uploadFiles()">开始上传</button>
                     <div id="uploadResults"></div>
