@@ -1,5 +1,10 @@
 FROM python:3.11-slim
 
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
+
+
 # 设置工作目录
 WORKDIR /app
 
