@@ -13,8 +13,7 @@
 | 你想做什么 | 去哪里看 |
 | --------- | ------- |
 | 了解系统架构 | docs/architecture/overview.md |
-| 了解编码规范 | docs/conventions/README.md |
-| 了解提交规范 | docs/git-commit.md |
+
 
 ## 技术栈
 
