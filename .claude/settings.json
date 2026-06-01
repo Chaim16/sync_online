@@ -1,0 +1,21 @@
+{
+  "includeGitInstructions": true,
+
+  "permissions": {
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)",
+      "Read(.env)",
+      "Read(.env.*)"
+    ]
+  },
+
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  },
+
+  "autoMemoryDirectory": "./.claude/memory",
+
+  "hooks": {}
+}
